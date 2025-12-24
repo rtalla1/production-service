@@ -1,0 +1,5 @@
+/Users/rtall/Projects/production-service/src/main/java/com/example/taskservice/controller/TaskController.java
+/Users/rtall/Projects/production-service/src/main/java/com/example/taskservice/TaskServiceApplication.java
+/Users/rtall/Projects/production-service/src/main/java/com/example/taskservice/entity/Task.java
+/Users/rtall/Projects/production-service/src/main/java/com/example/taskservice/repository/TaskRepository.java
+/Users/rtall/Projects/production-service/src/main/java/com/example/taskservice/service/TaskService.java
