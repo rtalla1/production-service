@@ -34,6 +34,9 @@ public class TaskController {
      * Creates a new task.
      * POST /tasks
      */
+    // First @RequestBody: convert JSON to CreateTaskRequest object
+    // Second @Valid: validate CreateTaskRequest object using Bean Validation
+    // Third @RequestBody: convert CreateTaskRequest object to Task object
     @PostMapping
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody CreateTaskRequest request) {
         Task task = taskService.createTask(request.title());

@@ -34,6 +34,7 @@ public class Task {
     public Task(String title) {
         this.title = title;
         this.createdAt = Instant.now();
+        // @GeneratedValue causes Hibernate to generate id at persist time, NOT construction time
     }
 
     // Getters
