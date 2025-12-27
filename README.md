@@ -1,73 +1,60 @@
 # Task Service
 
-A minimal, production-style Spring Boot REST API for managing tasks.
+A Spring Boot REST API with PostgreSQL, designed for production.
 
-## Tech Stack
+## Highlights
 
-- Java 17
-- Spring Boot 3.2.1
-- Spring Web (REST API)
-- Spring Data JPA (Persistence)
-- H2 Database (In-memory, for development)
+- Layered architecture (Controller → Service → Repository)
+- Database migrations with Flyway
+- Health probes for container orchestration
+- Global exception handling with consistent error responses
+- Integration tests against real PostgreSQL
+- CI pipeline with GitHub Actions
 
-## Project Structure
+## Stack
 
-```
-src/main/java/com/example/taskservice/
-├── TaskServiceApplication.java   # Application entry point
-├── controller/
-│   └── TaskController.java       # REST endpoints
-├── service/
-│   └── TaskService.java          # Business logic
-├── repository/
-│   └── TaskRepository.java       # Data access layer
-└── entity/
-    └── Task.java                 # JPA entity
-```
+Java 17 · Spring Boot 3.2 · PostgreSQL 14 · Flyway · Docker · GitHub Actions
 
-## API Endpoints
-
-| Method | Endpoint       | Description        |
-|--------|----------------|--------------------|
-| POST   | `/tasks`       | Create a new task  |
-| GET    | `/tasks/{id}`  | Get task by ID     |
-| GET    | `/tasks`       | Get all tasks      |
-
-## Running the Application
+## Run
 
 ```bash
-# Build
-./mvnw clean package
-
-# Run
-./mvnw spring-boot:run
+docker-compose up --build -d
+curl http://localhost:8080/actuator/health
 ```
 
-The service will start on `http://localhost:8080`.
+## Test
 
-## Example Requests
-
-**Create a task:**
 ```bash
-curl -X POST http://localhost:8080/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title": "My first task"}'
+docker-compose up -d postgres
+./mvnw test
 ```
 
-**Get a task by ID:**
-```bash
-curl http://localhost:8080/tasks/{id}
+## API
+
+| Method | Endpoint          | Description    |
+| ------ | ----------------- | -------------- |
+| POST   | `/api/tasks`      | Create task    |
+| GET    | `/api/tasks/{id}` | Get task by ID |
+| GET    | `/api/tasks`      | List all tasks |
+
+Health: `/actuator/health/readiness` · `/actuator/health/liveness`
+
+## Design Decisions
+
+**Flyway + Hibernate validate** — Flyway owns schema. Hibernate validates on startup. No silent drift.
+
+**Fail-fast DB config** — 5s connection timeout. Don't make users wait 30s for an error.
+
+**Readiness includes DB** — If the database is unreachable, don't accept traffic.
+
+**Global exception handler** — Consistent JSON errors. No stack traces to clients.
+
+## Structure
+
 ```
-
-**Get all tasks:**
-```bash
-curl http://localhost:8080/tasks
+controller/TaskController.java    — REST endpoints, validation
+service/TaskService.java          — Business logic, transactions
+repository/TaskRepository.java    — Data access (Spring Data JPA)
+entity/Task.java                  — JPA entity
+exception/GlobalExceptionHandler  — @RestControllerAdvice
 ```
-
-## Development Tools
-
-- H2 Console: `http://localhost:8080/h2-console`
-  - JDBC URL: `jdbc:h2:mem:taskdb`
-  - Username: `sa`
-  - Password: (empty)
-

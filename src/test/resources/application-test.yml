@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    # Use docker-compose Postgres container for integration tests
+    # docker-compose up -d must be run before running tests
+    url: jdbc:postgresql://localhost:5432/taskdb
+    username: taskuser
+    password: taskpass
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true

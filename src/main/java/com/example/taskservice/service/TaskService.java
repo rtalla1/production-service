@@ -35,7 +35,7 @@ public class TaskService {
      * Retrieves a task by its ID.
      */
     public Optional<Task> getTaskById(UUID id) {
-        return taskRepository.findById(id);
+        return (id == null) ? Optional.empty() : taskRepository.findById(id);
     }
 
     /**

@@ -11,9 +11,14 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.stream.Collectors;
 import java.time.Instant;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // when any controller throws exception, Spring looks for @RestControllerAdvice
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Handles validation errors (e.g., @NotBlank failed on request body)
@@ -92,7 +97,8 @@ public class GlobalExceptionHandler {
             Exception ex,
             HttpServletRequest request) {
         
-        // log log.error("Unexpected error", ex) in production
+        // need to see what went wrong
+        log.error("Unexpected error on {} {}", request.getMethod(), request.getRequestURI(), ex);
         
         ErrorResponse error = new ErrorResponse(
                 Instant.now(),

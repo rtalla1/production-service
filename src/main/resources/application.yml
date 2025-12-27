@@ -39,7 +39,7 @@ management:
       group:
         readiness:
           # readinessState: built-in indicator, becomes UP after app finishes initializing
-          # db: check if database is accessible
+          # db: check if database is accessible using a simple query
           include: readinessState, db
 
 server:

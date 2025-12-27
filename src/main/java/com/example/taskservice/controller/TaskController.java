@@ -22,7 +22,8 @@ import java.util.UUID;
  * REST controller for Task operations.
  */
 @RestController
-@RequestMapping("/tasks")
+// could set context path to /api, but then actuator endpoints would change
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService taskService;
