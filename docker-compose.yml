@@ -1,29 +1,34 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:14
     container_name: task-postgres
     environment:
+      # special variables for Postgres image
       POSTGRES_DB: taskdb
       POSTGRES_USER: taskuser
       POSTGRES_PASSWORD: taskpass
+    # access container db from host
     ports:
       - "5432:5432"
+    # postgres writes here, make it a volume so that
+    # data persists outside of container lifecycle
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   app:
     build: .
     container_name: task-service
+    # postgres must be running before app starts
     depends_on:
       - postgres
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/taskdb
       DB_USERNAME: taskuser
       DB_PASSWORD: taskpass
+    # access service from host
     ports:
       - "8080:8080"
 
+# declare volume (docker auto-creates from postgres service)
 volumes:
   postgres_data:

@@ -1,5 +1,6 @@
 package com.example.taskservice.controller;
 
+import com.example.taskservice.exception.ResourceNotFoundException;
 import com.example.taskservice.entity.Task;
 import com.example.taskservice.service.TaskService;
 import jakarta.validation.Valid;
@@ -49,9 +50,9 @@ public class TaskController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponse> getTask(@PathVariable UUID id) {
-        return taskService.getTaskById(id)
-                .map(task -> ResponseEntity.ok(TaskResponse.from(task)))
-                .orElse(ResponseEntity.notFound().build());
+        Task task = taskService.getTaskById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
+        return ResponseEntity.ok(TaskResponse.from(task));
     }
 
     /**
