@@ -1,32 +1,14 @@
 # Task Service
 
-A Spring Boot REST API with PostgreSQL, designed for production.
+Production-ready REST API demonstrating backend engineering practices: fail-fast configuration, health probes for orchestration, schema migrations, and structured error handling.
 
-## Highlights
-
-- Layered architecture (Controller → Service → Repository)
-- Database migrations with Flyway
-- Health probes for container orchestration
-- Global exception handling with consistent error responses
-- Integration tests against real PostgreSQL
-- CI pipeline with GitHub Actions
-
-## Stack
-
-Java 17 · Spring Boot 3.2 · PostgreSQL 14 · Flyway · Docker · GitHub Actions
+**Stack:** Java 17 · Spring Boot 3.2 · PostgreSQL · Flyway · Docker · GitHub Actions
 
 ## Run
 
 ```bash
 docker-compose up --build -d
-curl http://localhost:8080/actuator/health
-```
-
-## Test
-
-```bash
-docker-compose up -d postgres
-./mvnw test
+curl http://localhost:8080/actuator/health/readiness
 ```
 
 ## API
@@ -37,24 +19,31 @@ docker-compose up -d postgres
 | GET    | `/api/tasks/{id}` | Get task by ID |
 | GET    | `/api/tasks`      | List all tasks |
 
-Health: `/actuator/health/readiness` · `/actuator/health/liveness`
+Health: `GET /actuator/health/readiness` · `GET /actuator/health/liveness`
 
-## Design Decisions
+## Engineering Decisions
 
-**Flyway + Hibernate validate** — Flyway owns schema. Hibernate validates on startup. No silent drift.
+**Flyway + Hibernate validate**  
+Flyway owns schema evolution. Hibernate validates entity mappings on startup — catches drift immediately instead of failing silently at runtime.
 
-**Fail-fast DB config** — 5s connection timeout. Don't make users wait 30s for an error.
+**Fail-fast database config**  
+5-second connection timeout instead of the 30-second default. Users shouldn't wait half a minute to learn the database is down.
 
-**Readiness includes DB** — If the database is unreachable, don't accept traffic.
+**Readiness probe includes database**  
+Kubernetes (or any orchestrator) shouldn't route traffic to an instance that can't reach its datastore. Readiness checks DB connectivity, liveness doesn't — so a DB outage triggers failover, not pod restarts.
 
-**Global exception handler** — Consistent JSON errors. No stack traces to clients.
+**Global exception handler**  
+All errors return consistent JSON. Stack traces stay in logs, not in API responses. Invalid UUIDs, validation failures, and 404s all follow the same format.
+
+**CI against real PostgreSQL**  
+GitHub Actions spins up a Postgres container. Tests run against the same database engine as production — no H2 surprises.
 
 ## Structure
 
 ```
-controller/TaskController.java    — REST endpoints, validation
-service/TaskService.java          — Business logic, transactions
-repository/TaskRepository.java    — Data access (Spring Data JPA)
-entity/Task.java                  — JPA entity
-exception/GlobalExceptionHandler  — @RestControllerAdvice
+controller/   REST endpoints, request validation, response mapping
+service/      Business logic, transaction boundaries
+repository/   Data access (Spring Data JPA)
+entity/       JPA entities
+exception/    @RestControllerAdvice, custom exceptions, error DTOs
 ```
