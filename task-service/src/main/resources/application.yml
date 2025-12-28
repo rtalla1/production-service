@@ -18,6 +18,13 @@ spring:
     properties:
       hibernate:
         format_sql: true # if we want to show sql for debugging
+  
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      # serialize for Kafka, which stores by bytes
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   # H2 Console for development (access at /h2-console)
   # h2:

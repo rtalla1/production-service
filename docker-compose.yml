@@ -15,16 +15,47 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  #  use a single node for local development
+  kafka:
+    image: apache/kafka:4.1.1
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller # controller required for metadata management, even with a single broker
+      # LISTENERS: where Kafka listens for initial connections from clients
+      # listen on all network interfaces since some clients may be on different networks
+      # PLAINTEXT: containers connect to Kafka here
+      # CONTROLLER: KRaft controller communication
+      # PLAINTEXT_HOST: host machine connects to Kafka here
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9092
+      # ADVERTISED_LISTENERS: where Kafka tells clients to connect in Kafka response protocol
+      # we use the same ports since we are not using and do not need to use a proxy/load balancer
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      # using plaintext (no encryption) for all listeners
+      # in production, we would use SSL/TLS for all listeners
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      # who participates in leader election (just our one broker)
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      # identify that this listener is the one to handle controller traffic
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # one broker, so replication factor should be 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
   app:
-    build: .
+    build: ./task-service
     container_name: task-service
     # postgres must be running before app starts
     depends_on:
       - postgres
+      - kafka
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/taskdb
       DB_USERNAME: taskuser
       DB_PASSWORD: taskpass
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     # access service from host
     ports:
       - "8080:8080"
