@@ -45,4 +45,4 @@ jobs:
         run: ./mvnw clean verify
 
       - name: Build Docker image
-        run: docker build -t task-service:${{ github.sha }} . # tag image with commit hash
+        run: docker build -t task-service:${{ github.sha }} ./task-service # tag image with commit hash
