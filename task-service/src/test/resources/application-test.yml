@@ -12,3 +12,7 @@ spring:
 
   flyway:
     enabled: true
+
+  # Disable Kafka in tests (we mock the producer)
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration

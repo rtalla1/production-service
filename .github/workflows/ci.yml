@@ -48,4 +48,4 @@ jobs:
         run: docker build -t task-service:${{ github.sha }} ./task-service # tag image with commit hash
       
       - name: Build notification-service Docker image
-        run: docker build -t notification-service:${{ github.sha }} ./notification-service # tag image with commit hash
+        run: docker build -t notification-service:${{ github.sha }} ./notification-service
