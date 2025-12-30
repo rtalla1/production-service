@@ -42,9 +42,11 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       # one broker, so replication factor should be 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      # we will only have one consumer, so more than one partition doesn't give parallelism
+      KAFKA_NUM_PARTITIONS: 1
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
 
-  app:
+  task-service:
     build: ./task-service
     container_name: task-service
     # postgres must be running before app starts
@@ -59,6 +61,16 @@ services:
     # access service from host
     ports:
       - "8080:8080"
+  
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    ports:
+      - "8081:8081"
 
 # declare volume (docker auto-creates from postgres service)
 volumes:

@@ -5,6 +5,9 @@
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Maven will look for parent POM at ../pom.xml -->
+    <!-- since this is a monorepo, the parent pom is in production-service, NOT spring-boot-starter-parent -->
+    <!-- <relativePath/> tells Maven to get the POM from Maven Central -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>

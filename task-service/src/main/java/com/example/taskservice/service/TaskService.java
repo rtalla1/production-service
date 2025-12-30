@@ -1,6 +1,8 @@
 package com.example.taskservice.service;
 
 import com.example.taskservice.entity.Task;
+import com.example.taskservice.event.TaskEvent;
+import com.example.taskservice.event.TaskEventProducer;
 import com.example.taskservice.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +19,11 @@ import java.util.UUID;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskEventProducer taskEventProducer;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskEventProducer taskEventProducer) {
         this.taskRepository = taskRepository;
+        this.taskEventProducer = taskEventProducer;
     }
 
     /**
@@ -28,7 +32,9 @@ public class TaskService {
     @Transactional
     public Task createTask(String title) {
         Task task = new Task(title);
-        return taskRepository.save(task);
+        Task saved = taskRepository.save(task);
+        taskEventProducer.publish(TaskEvent.created(saved.getId(), saved.getTitle()));
+        return saved;
     }
 
     /**
