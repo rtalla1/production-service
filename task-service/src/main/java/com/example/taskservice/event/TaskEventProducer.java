@@ -22,6 +22,7 @@ public class TaskEventProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    @SuppressWarnings("null") // TOPIC is a constant, taskId is checked by requireNonNull
     public void publish(TaskEvent event) {
         log.info("Publishing event: {} for task {}", event.eventType(), event.taskId());
         // use task id as the key to ensure order of events for that task, even across multiple partitions
