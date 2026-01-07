@@ -69,13 +69,14 @@ docker logs -f notification-service | grep Received
 
 ## API
 
-| Method | Endpoint                     | Description     |
-| ------ | ---------------------------- | --------------- |
-| POST   | `/api/tasks`                 | Create a task   |
-| GET    | `/api/tasks/{id}`            | Get task by ID  |
-| GET    | `/api/tasks`                 | List all tasks  |
-| GET    | `/actuator/health/readiness` | Readiness check |
-| GET    | `/actuator/health/liveness`  | Liveness check  |
+| Method | Endpoint                     | Description       |
+| ------ | ---------------------------- | ----------------- |
+| POST   | `/api/tasks`                 | Create a task     |
+| GET    | `/api/tasks/{id}`            | Get task by ID    |
+| GET    | `/api/tasks`                 | List all tasks    |
+| GET    | `/actuator/health/readiness` | Readiness check   |
+| GET    | `/actuator/health/liveness`  | Liveness check    |
+| GET    | `/actuator/prometheus`       | Prometheus metrics|
 
 ## What I'd Change **at Scale**
 
