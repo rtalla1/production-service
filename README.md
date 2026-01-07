@@ -31,7 +31,7 @@ A microservices backend built to demonstrate production engineering practices. M
 
 ## Why These Choices
 
-### Kafka between two services?
+### Kafka between two services
 
 It's overkill for this scale. A tightly-coupled architecture with a direct HTTP call would work fine.
 
@@ -52,6 +52,10 @@ A database outage should stop traffic routing, not trigger a restart loop. These
 
 All errors return the same JSON structure and stack traces stay in logs.
 
+### Prometheus metrics (Grafana-ready)
+
+The `/actuator/prometheus` endpoint exposes request latencies, error rates, JVM stats, and connection pool metrics. In production, Prometheus would scrape this endpoint and Grafana would visualize it.
+
 ## Running It
 
 ```bash
@@ -69,16 +73,16 @@ docker logs -f notification-service | grep Received
 
 ## API
 
-| Method | Endpoint                     | Description       |
-| ------ | ---------------------------- | ----------------- |
-| POST   | `/api/tasks`                 | Create a task     |
-| GET    | `/api/tasks/{id}`            | Get task by ID    |
-| GET    | `/api/tasks`                 | List all tasks    |
-| GET    | `/actuator/health/readiness` | Readiness check   |
-| GET    | `/actuator/health/liveness`  | Liveness check    |
-| GET    | `/actuator/prometheus`       | Prometheus metrics|
+| Method | Endpoint                     | Description        |
+| ------ | ---------------------------- | ------------------ |
+| POST   | `/api/tasks`                 | Create a task      |
+| GET    | `/api/tasks/{id}`            | Get task by ID     |
+| GET    | `/api/tasks`                 | List all tasks     |
+| GET    | `/actuator/health/readiness` | Readiness check    |
+| GET    | `/actuator/health/liveness`  | Liveness check     |
+| GET    | `/actuator/prometheus`       | Prometheus metrics |
 
-## What I'd Change **at Scale**
+## What I'd Change _at Scale_
 
 **Caching**: Redis for frequent reads
 
